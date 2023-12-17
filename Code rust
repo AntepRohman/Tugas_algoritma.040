@@ -1,0 +1,145 @@
+use std::collections::HashMap;
+use std::io;
+
+struct Santri {
+    nama: String,
+    umur: i32,
+    alamat: String,
+}
+
+impl Santri {
+    fn new(nama: String, umur: i32, alamat: String) -> Santri {
+        Santri { nama, umur, alamat }
+    }
+}
+
+fn main() {
+    let mut data_santri: HashMap<String, Santri> = HashMap::new();
+
+    loop {
+        println!("Menu:");
+        println!("1. Tambah data santri");
+        println!("2. Lihat data santri");
+        println!("3. Edit data santri");
+        println!("4. Hapus data santri");
+        println!("5. Keluar");
+
+        let mut choice = String::new();
+        io::stdin()
+            .read_line(&mut choice)
+            .expect("Gagal membaca baris");
+
+        let choice: u32 = match choice.trim().parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("Masukkan nomor yang valid");
+                continue;
+            }
+        };
+
+        match choice {
+            1 => tambah_data_santri(&mut data_santri),
+            2 => lihat_data_santri(&data_santri),
+            3 => edit_data_santri(&mut data_santri),
+            4 => hapus_data_santri(&mut data_santri),
+            5 => {
+                println!("Keluar dari program.");
+                break;
+            }
+            _ => println!("Pilihan tidak valid"),
+        }
+    }
+}
+
+fn tambah_data_santri(data_santri: &mut HashMap<String, Santri>) {
+    println!("Masukkan nama:");
+    let mut nama = String::new();
+    io::stdin()
+        .read_line(&mut nama)
+        .expect("Gagal membaca baris");
+
+    println!("Masukkan umur:");
+    let mut umur = String::new();
+    io::stdin()
+        .read_line(&mut umur)
+        .expect("Gagal membaca baris");
+
+    let umur: i32 = match umur.trim().parse() {
+        Ok(num) => num,
+        Err(_) => {
+            println!("Masukkan umur yang valid");
+            return;
+        }
+    };
+
+    println!("Masukkan alamat:");
+    let mut alamat = String::new();
+    io::stdin()
+        .read_line(&mut alamat)
+        .expect("Gagal membaca baris");
+
+    let santri = Santri::new(nama.trim().to_string(), umur, alamat.trim().to_string());
+    data_santri.insert(santri.nama.clone(), santri);
+    println!("Data santri berhasil ditambahkan!");
+}
+
+fn lihat_data_santri(data_santri: &HashMap<String, Santri>) {
+    if data_santri.is_empty() {
+        println!("Data santri kosong");
+    } else {
+        println!("Data Santri:");
+        for (nama, santri) in data_santri {
+            println!("Nama: {}, Umur: {}, Alamat: {}", nama, santri.umur, santri.alamat);
+        }
+    }
+}
+
+fn edit_data_santri(data_santri: &mut HashMap<String, Santri>) {
+    println!("Masukkan nama santri yang ingin diedit:");
+    let mut nama = String::new();
+    io::stdin()
+        .read_line(&mut nama)
+        .expect("Gagal membaca baris");
+
+    if let Some(santri) = data_santri.get_mut(&nama.trim().to_string()) {
+        println!("Masukkan umur baru:");
+        let mut umur = String::new();
+        io::stdin()
+            .read_line(&mut umur)
+            .expect("Gagal membaca baris");
+
+        let umur: i32 = match umur.trim().parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("Masukkan umur yang valid");
+                return;
+            }
+        };
+
+        println!("Masukkan alamat baru:");
+        let mut alamat = String::new();
+        io::stdin()
+            .read_line(&mut alamat)
+            .expect("Gagal membaca baris");
+
+        santri.umur = umur;
+        santri.alamat = alamat.trim().to_string();
+        println!("Data santri berhasil diubah!");
+    } else {
+        println!("Santri dengan nama tersebut tidak ditemukan.");
+    }
+}
+
+fn hapus_data_santri(data_santri: &mut HashMap<String, Santri>) {
+    println!("Masukkan nama santri yang ingin dihapus:");
+    let mut nama = String::new();
+    io::stdin()
+        .read_line(&mut nama)
+        .expect("Gagal membaca baris");
+
+    if let Some(_) = data_santri.remove(&nama.trim().to_string()) {
+        println!("Data santri berhasil dihapus!");
+    } else {
+        println!("Santri dengan nama tersebut tidak ditemukan.");
+    }
+}
